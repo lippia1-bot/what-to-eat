@@ -237,7 +237,8 @@
 
         .recipe-card .recipe-steps {
             font-size: 13px;
-            line-height: 1.8;
+            line-height: 1.7;
+            padding-left: 18px;
         }
 
         .recipe-section-title {
@@ -258,10 +259,16 @@
         .recipe-steps {
             font-size: 14px;
             color: #555;
-            line-height: 2;
+            line-height: 1.8;
+            padding-left: 20px;
+            margin: 0;
         }
 
-        .recipe-steps li { margin-bottom: 4px; }
+        .recipe-steps li {
+            margin-bottom: 2px;
+            padding-left: 4px;
+            word-break: break-word;
+        }
 
         .no-recipe {
             text-align: center;
@@ -432,6 +439,13 @@ const deliveryData = [
     { name: "铁板饭", emoji: "🍳", tag: "快餐" },
     { name: "咖喱饭", emoji: "🍛", tag: "快餐" },
     { name: "泡椒凤爪", emoji: "🍗", tag: "快餐" },
+    { name: "烤肉拌饭", emoji: "🥩", tag: "快餐" },
+    { name: "鸡公煲", emoji: "🍗", tag: "快餐" },
+    { name: "黄记煌", emoji: "🥘", tag: "快餐" },
+    { name: "瓦罐汤+饭", emoji: "🥣", tag: "快餐" },
+    { name: "咸肉菜饭", emoji: "🍚", tag: "快餐" },
+    { name: "蛋包饭", emoji: "🍳", tag: "快餐" },
+    { name: "照烧鸡腿饭", emoji: "🍗", tag: "快餐" },
     // 面食
     { name: "兰州拉面", emoji: "🍜", tag: "面食" },
     { name: "饺子", emoji: "🥟", tag: "面食" },
@@ -444,6 +458,18 @@ const deliveryData = [
     { name: "拌面", emoji: "🍜", tag: "面食" },
     { name: "水饺", emoji: "🥟", tag: "面食" },
     { name: "生煎包", emoji: "🥟", tag: "面食" },
+    { name: "板面", emoji: "🍜", tag: "面食" },
+    { name: "拉条子", emoji: "🍜", tag: "面食" },
+    { name: "担担面", emoji: "🍜", tag: "面食" },
+    { name: "阳春面", emoji: "🍜", tag: "面食" },
+    { name: "牛肉面", emoji: "🍜", tag: "面食" },
+    { name: "酸汤面", emoji: "🍜", tag: "面食" },
+    { name: "油泼面", emoji: "🍜", tag: "面食" },
+    { name: "肉丝面", emoji: "🍜", tag: "面食" },
+    { name: "锅贴", emoji: "🥟", tag: "面食" },
+    { name: "馅饼", emoji: "🫓", tag: "面食" },
+    { name: "花卷", emoji: "🫓", tag: "面食" },
+    { name: "肉包/菜包", emoji: "🥟", tag: "面食" },
     // 川味
     { name: "麻辣烫", emoji: "🥘", tag: "川味" },
     { name: "烤鱼", emoji: "🐟", tag: "川味" },
@@ -456,6 +482,15 @@ const deliveryData = [
     { name: "干锅", emoji: "🥘", tag: "川味" },
     { name: "夫妻肺片", emoji: "🥩", tag: "川味" },
     { name: "口水鸡", emoji: "🍗", tag: "川味" },
+    { name: "麻婆豆腐", emoji: "🧈", tag: "川味" },
+    { name: "水煮鱼", emoji: "🐟", tag: "川味" },
+    { name: "辣子鸡", emoji: "🍗", tag: "川味" },
+    { name: "尖椒兔", emoji: "🐇", tag: "川味" },
+    { name: "蒜泥白肉", emoji: "🥩", tag: "川味" },
+    { name: "干煸四季豆", emoji: "🫘", tag: "川味" },
+    { name: "鱼香肉丝", emoji: "🥩", tag: "川味" },
+    { name: "宫保鸡丁", emoji: "🍗", tag: "川味" },
+    { name: "火锅", emoji: "🍲", tag: "川味" },
     // 粉面
     { name: "螺蛳粉", emoji: "🍜", tag: "粉面" },
     { name: "过桥米线", emoji: "🍜", tag: "粉面" },
@@ -464,6 +499,13 @@ const deliveryData = [
     { name: "桂林米粉", emoji: "🍜", tag: "粉面" },
     { name: "炒米粉", emoji: "🍜", tag: "粉面" },
     { name: "土豆粉", emoji: "🍜", tag: "粉面" },
+    { name: "砂锅米线", emoji: "🍜", tag: "粉面" },
+    { name: "炒河粉", emoji: "🍜", tag: "粉面" },
+    { name: "肠粉", emoji: "🥟", tag: "粉面" },
+    { name: "凉粉", emoji: "🥡", tag: "粉面" },
+    { name: "南昌拌粉", emoji: "🍜", tag: "粉面" },
+    { name: "湖南米粉", emoji: "🍜", tag: "粉面" },
+    { name: "云南小锅米线", emoji: "🍜", tag: "粉面" },
     // 小吃
     { name: "沙县小吃", emoji: "🥟", tag: "小吃" },
     { name: "煎饼果子", emoji: "🫓", tag: "小吃" },
@@ -475,6 +517,15 @@ const deliveryData = [
     { name: "烤冷面", emoji: "🫓", tag: "小吃" },
     { name: "春卷", emoji: "🥟", tag: "小吃" },
     { name: "烧麦", emoji: "🥟", tag: "小吃" },
+    { name: "炸鸡排", emoji: "🍗", tag: "小吃" },
+    { name: "铁板豆腐", emoji: "🧈", tag: "小吃" },
+    { name: "烤红薯", emoji: "🍠", tag: "小吃" },
+    { name: "炒栗子", emoji: "🌰", tag: "小吃" },
+    { name: "炸鸡腿", emoji: "🍗", tag: "小吃" },
+    { name: "酱香饼", emoji: "🫓", tag: "小吃" },
+    { name: "葱油饼", emoji: "🫓", tag: "小吃" },
+    { name: "糯米鸡", emoji: "🍚", tag: "小吃" },
+    { name: "梅干菜扣肉饼", emoji: "🫓", tag: "小吃" },
     // 烧烤
     { name: "烤串", emoji: "🍢", tag: "烧烤" },
     { name: "铁板烧", emoji: "🥩", tag: "烧烤" },
@@ -483,6 +534,15 @@ const deliveryData = [
     { name: "炸串", emoji: "🍢", tag: "烧烤" },
     { name: "烤鸭", emoji: "🦆", tag: "烧烤" },
     { name: "羊蝎子", emoji: "🍖", tag: "烧烤" },
+    { name: "烤猪蹄", emoji: "🍖", tag: "烧烤" },
+    { name: "烤鱼", emoji: "🐟", tag: "烧烤" },
+    { name: "烤鸡翅", emoji: "🍗", tag: "烧烤" },
+    { name: "烤生蚝", emoji: "🦪", tag: "烧烤" },
+    { name: "烤羊肉串", emoji: "🍢", tag: "烧烤" },
+    { name: "烤牛肉串", emoji: "🍢", tag: "烧烤" },
+    { name: "烤韭菜", emoji: "🥬", tag: "烧烤" },
+    { name: "烤茄子", emoji: "🍆", tag: "烧烤" },
+    { name: "烤玉米", emoji: "🌽", tag: "烧烤" },
     // 西式
     { name: "麦当劳", emoji: "🍔", tag: "西式" },
     { name: "肯德基", emoji: "🍗", tag: "西式" },
@@ -495,6 +555,13 @@ const deliveryData = [
     { name: "赛百味", emoji: "🥪", tag: "西式" },
     { name: "华莱士", emoji: "🍔", tag: "西式" },
     { name: "塔可", emoji: "🌮", tag: "西式" },
+    { name: "德克士", emoji: "🍗", tag: "西式" },
+    { name: "汉堡", emoji: "🍔", tag: "西式" },
+    { name: "薯条", emoji: "🍟", tag: "西式" },
+    { name: "炸鸡桶", emoji: "🍗", tag: "西式" },
+    { name: "鸡肉卷", emoji: "🌯", tag: "西式" },
+    { name: "墨西哥卷", emoji: "🌯", tag: "西式" },
+    { name: "奶油蘑菇汤", emoji: "🥣", tag: "西式" },
     // 日料
     { name: "寿司", emoji: "🍣", tag: "日料" },
     { name: "拉面/日式面", emoji: "🍜", tag: "日料" },
@@ -504,6 +571,13 @@ const deliveryData = [
     { name: "章鱼小丸子", emoji: "🐙", tag: "日料" },
     { name: "大阪烧", emoji: "🥞", tag: "日料" },
     { name: "刺身", emoji: "🍣", tag: "日料" },
+    { name: "日式猪排饭", emoji: "🥩", tag: "日料" },
+    { name: "日式牛肉饭", emoji: "🥩", tag: "日料" },
+    { name: "乌冬面", emoji: "🍜", tag: "日料" },
+    { name: "味噌汤", emoji: "🥣", tag: "日料" },
+    { name: "日式便当", emoji: "🍱", tag: "日料" },
+    { name: "关东煮", emoji: "🍢", tag: "日料" },
+    { name: "手卷", emoji: "🍣", tag: "日料" },
     // 韩餐
     { name: "韩式拌饭", emoji: "🍚", tag: "韩餐" },
     { name: "韩式炸鸡", emoji: "🍗", tag: "韩餐" },
@@ -513,6 +587,13 @@ const deliveryData = [
     { name: "泡菜汤", emoji: "🥘", tag: "韩餐" },
     { name: "冷面", emoji: "🍜", tag: "韩餐" },
     { name: "紫菜包饭", emoji: "🍙", tag: "韩餐" },
+    { name: "韩式年糕", emoji: "🍡", tag: "韩餐" },
+    { name: "辣炒年糕", emoji: "🍡", tag: "韩餐" },
+    { name: "韩式炸酱面", emoji: "🍜", tag: "韩餐" },
+    { name: "参鸡汤", emoji: "🍗", tag: "韩餐" },
+    { name: "韩式豆腐汤", emoji: "🥘", tag: "韩餐" },
+    { name: "大酱汤", emoji: "🥘", tag: "韩餐" },
+    { name: "韩式煎饼", emoji: "🥞", tag: "韩餐" },
     // 粤菜
     { name: "粤式烧腊", emoji: "🍖", tag: "粤菜" },
     { name: "煲仔饭", emoji: "🍚", tag: "粤菜" },
@@ -522,6 +603,13 @@ const deliveryData = [
     { name: "白切鸡", emoji: "🍗", tag: "粤菜" },
     { name: "艇仔粥", emoji: "🥣", tag: "粤菜" },
     { name: "云吞面", emoji: "🍜", tag: "粤菜" },
+    { name: "烧鹅", emoji: "🦆", tag: "粤菜" },
+    { name: "豉汁蒸排骨", emoji: "🍖", tag: "粤菜" },
+    { name: "凤爪", emoji: "🍗", tag: "粤菜" },
+    { name: "萝卜牛杂", emoji: "🥘", tag: "粤菜" },
+    { name: "糖水", emoji: "🍧", tag: "粤菜" },
+    { name: "双皮奶", emoji: "🍮", tag: "粤菜" },
+    { name: "煲汤", emoji: "🥣", tag: "粤菜" },
     // 东南亚
     { name: "泰式炒河粉", emoji: "🍜", tag: "东南亚" },
     { name: "越南粉", emoji: "🍜", tag: "东南亚" },
@@ -529,18 +617,54 @@ const deliveryData = [
     { name: "海南鸡饭", emoji: "🍗", tag: "东南亚" },
     { name: "印度飞饼", emoji: "🫓", tag: "东南亚" },
     { name: "叻沙", emoji: "🍜", tag: "东南亚" },
+    { name: "越南春卷", emoji: "🥟", tag: "东南亚" },
+    { name: "泰式咖喱", emoji: "🍛", tag: "东南亚" },
+    { name: "椰子鸡", emoji: "🍗", tag: "东南亚" },
+    { name: "肉骨茶", emoji: "🍖", tag: "东南亚" },
+    { name: "沙爹", emoji: "🍢", tag: "东南亚" },
+    { name: "炒蟹", emoji: "🦀", tag: "东南亚" },
     // 西北
     { name: "新疆大盘鸡", emoji: "🍗", tag: "西北" },
     { name: "羊肉泡馍", emoji: "🥘", tag: "西北" },
     { name: "烤全羊", emoji: "🍖", tag: "西北" },
     { name: "馕", emoji: "🫓", tag: "西北" },
     { name: "新疆炒米粉", emoji: "🍜", tag: "西北" },
+    { name: "手抓羊肉", emoji: "🍖", tag: "西北" },
+    { name: "烤包子", emoji: "🥟", tag: "西北" },
+    { name: "拉条子", emoji: "🍜", tag: "西北" },
+    { name: "大盘鸡拌面", emoji: "🍜", tag: "西北" },
+    { name: "羊肉串", emoji: "🍢", tag: "西北" },
+    { name: "酿皮", emoji: "🥡", tag: "西北" },
+    { name: "灰豆子", emoji: "🥣", tag: "西北" },
     // 东北
     { name: "东北铁锅炖", emoji: "🍲", tag: "东北" },
     { name: "锅包肉", emoji: "🥩", tag: "东北" },
     { name: "东北饺子", emoji: "🥟", tag: "东北" },
     { name: "地三鲜", emoji: "🍆", tag: "东北" },
     { name: "杀猪菜", emoji: "🍖", tag: "东北" },
+    { name: "小鸡炖蘑菇", emoji: "🍗", tag: "东北" },
+    { name: "猪肉炖粉条", emoji: "🥩", tag: "东北" },
+    { name: "酸菜炖排骨", emoji: "🍖", tag: "东北" },
+    { name: "东北拉皮", emoji: "🥡", tag: "东北" },
+    { name: "尖椒干豆腐", emoji: "🫑", tag: "东北" },
+    { name: "溜肉段", emoji: "🥩", tag: "东北" },
+    { name: "东北乱炖", emoji: "🍲", tag: "东北" },
+    // 湘菜
+    { name: "剁椒鱼头", emoji: "🐟", tag: "湘菜" },
+    { name: "小炒黄牛肉", emoji: "🥩", tag: "湘菜" },
+    { name: "辣椒炒肉", emoji: "🫑", tag: "湘菜" },
+    { name: "毛氏红烧肉", emoji: "🥩", tag: "湘菜" },
+    { name: "湘西外婆菜", emoji: "🥬", tag: "湘菜" },
+    { name: "口味虾", emoji: "🦞", tag: "湘菜" },
+    { name: "臭豆腐", emoji: "🫓", tag: "湘菜" },
+    { name: "糖油粑粑", emoji: "🍡", tag: "湘菜" },
+    // 闽菜
+    { name: "佛跳墙", emoji: "🥘", tag: "闽菜" },
+    { name: "沙茶面", emoji: "🍜", tag: "闽菜" },
+    { name: "海蛎煎", emoji: "🦪", tag: "闽菜" },
+    { name: "土笋冻", emoji: "🧊", tag: "闽菜" },
+    { name: "肉燕", emoji: "🥟", tag: "闽菜" },
+    { name: "拌面扁肉", emoji: "🍜", tag: "闽菜" },
     // 其他
     { name: "奶茶+甜点", emoji: "🧋", tag: "饮品" },
     { name: "轻食沙拉", emoji: "🥗", tag: "健康" },
@@ -550,47 +674,68 @@ const deliveryData = [
     { name: "卤煮", emoji: "🥘", tag: "京菜" },
     { name: "炒肝", emoji: "🥣", tag: "京菜" },
     { name: "豆汁焦圈", emoji: "🥣", tag: "京菜" },
+    { name: "炸酱面", emoji: "🍜", tag: "京菜" },
     { name: "小龙虾", emoji: "🦞", tag: "海鲜" },
     { name: "海鲜粥", emoji: "🥣", tag: "海鲜" },
     { name: "潮汕牛肉火锅", emoji: "🍲", tag: "潮汕" },
     { name: "潮汕砂锅粥", emoji: "🥣", tag: "潮汕" },
     { name: "生腌", emoji: "🦐", tag: "潮汕" },
+    { name: "卤味", emoji: "🍖", tag: "卤味" },
+    { name: "鸭脖", emoji: "🦆", tag: "卤味" },
+    { name: "周黑鸭", emoji: "🦆", tag: "卤味" },
+    { name: "绝味鸭脖", emoji: "🦆", tag: "卤味" },
+    { name: "鸡爪", emoji: "🍗", tag: "卤味" },
+    { name: "猪蹄", emoji: "🍖", tag: "卤味" },
+    { name: "卤牛肉", emoji: "🥩", tag: "卤味" },
+    { name: "甜品蛋糕", emoji: "🍰", tag: "甜品" },
+    { name: "冰淇淋", emoji: "🍦", tag: "甜品" },
+    { name: "面包烘焙", emoji: "🍞", tag: "甜品" },
+    { name: "水果捞", emoji: "🍓", tag: "甜品" },
+    { name: "果汁", emoji: "🧃", tag: "饮品" },
+    { name: "咖啡", emoji: "☕", tag: "饮品" },
 ];
 
 const commonIngredients = [
-    // 蛋奶
+    // ===== 最常用 =====
     { name: "鸡蛋", emoji: "🥚", cat: "蛋奶" },
-    { name: "牛奶", emoji: "🥛", cat: "蛋奶" },
-    // 肉类
     { name: "猪肉", emoji: "🥩", cat: "肉类" },
-    { name: "牛肉", emoji: "🥩", cat: "肉类" },
     { name: "鸡肉", emoji: "🍗", cat: "肉类" },
-    { name: "鸡翅", emoji: "🍗", cat: "肉类" },
-    { name: "排骨", emoji: "🍖", cat: "肉类" },
-    { name: "五花肉", emoji: "🥩", cat: "肉类" },
-    { name: "里脊肉", emoji: "🥩", cat: "肉类" },
-    { name: "腊肠", emoji: "🌭", cat: "肉类" },
-    { name: "火腿", emoji: "🌭", cat: "肉类" },
-    // 海鲜
-    { name: "虾", emoji: "🦐", cat: "海鲜" },
-    { name: "鱼", emoji: "🐟", cat: "海鲜" },
-    { name: "鱿鱼", emoji: "🦑", cat: "海鲜" },
-    { name: "蛤蜊", emoji: "🐚", cat: "海鲜" },
-    // 蔬菜
     { name: "番茄", emoji: "🍅", cat: "蔬菜" },
     { name: "土豆", emoji: "🥔", cat: "蔬菜" },
     { name: "青椒", emoji: "🫑", cat: "蔬菜" },
     { name: "白菜", emoji: "🥬", cat: "蔬菜" },
+    { name: "豆腐", emoji: "🧈", cat: "豆制品" },
+    { name: "大蒜", emoji: "🧄", cat: "调料" },
+    { name: "葱", emoji: "🧅", cat: "调料" },
+    // ===== 常用肉类 =====
+    { name: "牛肉", emoji: "🥩", cat: "肉类" },
+    { name: "五花肉", emoji: "🥩", cat: "肉类" },
+    { name: "鸡翅", emoji: "🍗", cat: "肉类" },
+    { name: "排骨", emoji: "🍖", cat: "肉类" },
+    { name: "里脊肉", emoji: "🥩", cat: "肉类" },
+    { name: "腊肠", emoji: "🌭", cat: "肉类" },
+    { name: "火腿", emoji: "🌭", cat: "肉类" },
+    { name: "肉末", emoji: "🥩", cat: "肉类" },
+    // ===== 海鲜 =====
+    { name: "虾", emoji: "🦐", cat: "海鲜" },
+    { name: "鱼", emoji: "🐟", cat: "海鲜" },
+    { name: "鱿鱼", emoji: "🦑", cat: "海鲜" },
+    { name: "蛤蜊", emoji: "🐚", cat: "海鲜" },
+    { name: "带鱼", emoji: "🐟", cat: "海鲜" },
+    { name: "鲈鱼", emoji: "🐟", cat: "海鲜" },
+    { name: "三文鱼", emoji: "🍣", cat: "海鲜" },
+    { name: "扇贝", emoji: "🦪", cat: "海鲜" },
+    // ===== 常用蔬菜 =====
     { name: "黄瓜", emoji: "🥒", cat: "蔬菜" },
     { name: "胡萝卜", emoji: "🥕", cat: "蔬菜" },
     { name: "洋葱", emoji: "🧅", cat: "蔬菜" },
-    { name: "蘑菇", emoji: "🍄", cat: "蔬菜" },
-    { name: "西兰花", emoji: "🥦", cat: "蔬菜" },
     { name: "茄子", emoji: "🍆", cat: "蔬菜" },
     { name: "豆角", emoji: "🫘", cat: "蔬菜" },
-    { name: "玉米", emoji: "🌽", cat: "蔬菜" },
+    { name: "西兰花", emoji: "🥦", cat: "蔬菜" },
+    { name: "蘑菇", emoji: "🍄", cat: "蔬菜" },
     { name: "生菜", emoji: "🥬", cat: "蔬菜" },
     { name: "菠菜", emoji: "🥬", cat: "蔬菜" },
+    { name: "玉米", emoji: "🌽", cat: "蔬菜" },
     { name: "芹菜", emoji: "🥬", cat: "蔬菜" },
     { name: "韭菜", emoji: "🥬", cat: "蔬菜" },
     { name: "花菜", emoji: "🥦", cat: "蔬菜" },
@@ -603,24 +748,64 @@ const commonIngredients = [
     { name: "杏鲍菇", emoji: "🍄", cat: "蔬菜" },
     { name: "木耳", emoji: "🍄", cat: "蔬菜" },
     { name: "豆芽", emoji: "🫘", cat: "蔬菜" },
-    // 豆制品
-    { name: "豆腐", emoji: "🧈", cat: "豆制品" },
+    { name: "西红柿", emoji: "🍅", cat: "蔬菜" },
+    { name: "尖椒", emoji: "🌶️", cat: "蔬菜" },
+    { name: "小米辣", emoji: "🌶️", cat: "蔬菜" },
+    { name: "香菜", emoji: "🌿", cat: "蔬菜" },
+    { name: "蒜苔", emoji: "🧄", cat: "蔬菜" },
+    { name: "茼蒿", emoji: "🥬", cat: "蔬菜" },
+    { name: "油麦菜", emoji: "🥬", cat: "蔬菜" },
+    { name: "空心菜", emoji: "🥬", cat: "蔬菜" },
+    { name: "芥蓝", emoji: "🥬", cat: "蔬菜" },
+    { name: "丝瓜", emoji: "🥒", cat: "蔬菜" },
+    { name: "苦瓜", emoji: "🥒", cat: "蔬菜" },
+    { name: "西葫芦", emoji: "🥒", cat: "蔬菜" },
+    { name: "豆干", emoji: "🧈", cat: "豆制品" },
+    // ===== 豆制品 =====
     { name: "腐竹", emoji: "🧈", cat: "豆制品" },
     { name: "豆皮", emoji: "🧈", cat: "豆制品" },
-    // 主食
+    { name: "油豆腐", emoji: "🧈", cat: "豆制品" },
+    // ===== 主食 =====
     { name: "米饭", emoji: "🍚", cat: "主食" },
     { name: "面条", emoji: "🍜", cat: "主食" },
     { name: "年糕", emoji: "🍡", cat: "主食" },
     { name: "粉丝", emoji: "🍜", cat: "主食" },
     { name: "饺子皮", emoji: "🥟", cat: "主食" },
     { name: "面粉", emoji: "🌾", cat: "主食" },
-    // 调料/配料
-    { name: "大蒜", emoji: "🧄", cat: "调料" },
-    { name: "葱", emoji: "🧅", cat: "调料" },
+    { name: "馒头", emoji: "🫓", cat: "主食" },
+    { name: "河粉", emoji: "🍜", cat: "主食" },
+    { name: "米粉", emoji: "🍜", cat: "主食" },
+    { name: "吐司", emoji: "🍞", cat: "主食" },
+    // ===== 蛋奶 =====
+    { name: "牛奶", emoji: "🥛", cat: "蛋奶" },
+    { name: "酸奶", emoji: "🥛", cat: "蛋奶" },
+    { name: "芝士", emoji: "🧀", cat: "蛋奶" },
+    // ===== 调料/配料 =====
     { name: "姜", emoji: "🫚", cat: "调料" },
     { name: "干辣椒", emoji: "🌶️", cat: "调料" },
     { name: "豆瓣酱", emoji: "🫙", cat: "调料" },
     { name: "番茄酱", emoji: "🫙", cat: "调料" },
+    { name: "花椒", emoji: "🫙", cat: "调料" },
+    { name: "八角", emoji: "⭐", cat: "调料" },
+    { name: "桂皮", emoji: "🫙", cat: "调料" },
+    { name: "香叶", emoji: "🌿", cat: "调料" },
+    { name: "蚝油", emoji: "🫙", cat: "调料" },
+    { name: "生抽", emoji: "🫙", cat: "调料" },
+    { name: "老抽", emoji: "🫙", cat: "调料" },
+    { name: "料酒", emoji: "🫙", cat: "调料" },
+    { name: "醋", emoji: "🫙", cat: "调料" },
+    { name: "白糖", emoji: "🧂", cat: "调料" },
+    { name: "淀粉", emoji: "🌾", cat: "调料" },
+    { name: "五香粉", emoji: "🫙", cat: "调料" },
+    { name: "咖喱块", emoji: "🫙", cat: "调料" },
+    { name: "火锅底料", emoji: "🫙", cat: "调料" },
+    // ===== 水果/其他 =====
+    { name: "苹果", emoji: "🍎", cat: "水果" },
+    { name: "香蕉", emoji: "🍌", cat: "水果" },
+    { name: "橙子", emoji: "🍊", cat: "水果" },
+    { name: "柠檬", emoji: "🍋", cat: "水果" },
+    { name: "可乐", emoji: "🥤", cat: "其他" },
+    { name: "啤酒", emoji: "🍺", cat: "其他" },
 ];
 
 // 菜谱数据库：食材组合 -> 菜谱
