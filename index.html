@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天吃什么</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 520px;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 32px 24px 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .header h1 { font-size: 28px; margin-bottom: 4px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #888;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: #ee5a24;
+            background: white;
+            border-bottom-color: #ee5a24;
+        }
+
+        .tab:hover { color: #ee5a24; }
+
+        .panel { display: none; padding: 28px 24px 32px; }
+        .panel.active { display: block; }
+
+        /* === 外卖部分 === */
+        .result-box {
+            background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+            border: 2px dashed #ffcccc;
+            border-radius: 16px;
+            padding: 28px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .result-box.spin {
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+
+        .result-emoji { font-size: 48px; margin-bottom: 8px; }
+        .result-text { font-size: 22px; font-weight: 700; color: #333; }
+        .result-sub { font-size: 14px; color: #999; margin-top: 6px; }
+        .result-placeholder { color: #ccc; font-size: 16px; }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            background: linear-gradient(135deg, #ee5a24, #ff6b6b);
+            box-shadow: 0 4px 15px rgba(238,90,36,0.4);
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(238,90,36,0.5); }
+        .btn:active { transform: translateY(0); }
+
+        /* === 做饭部分 === */
+        .fridge-section { margin-bottom: 20px; }
+
+        .fridge-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .tag-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+
+        .tag {
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #555;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .tag:hover { border-color: #ee5a24; color: #ee5a24; }
+        .tag.selected { background: #ee5a24; color: white; border-color: #ee5a24; }
+
+        .custom-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .custom-input-row input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .custom-input-row input:focus { border-color: #ee5a24; }
+
+        .custom-input-row button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            background: #ee5a24;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .selected-ingredients {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+            min-height: 28px;
+        }
+
+        .selected-chip {
+            padding: 5px 12px;
+            background: #fff0e6;
+            border: 1px solid #ffccaa;
+            border-radius: 14px;
+            font-size: 12px;
+            color: #ee5a24;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .selected-chip .remove {
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 2px;
+        }
+
+        .recipe-result {
+            background: #f9f9f9;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .recipe-result.show { display: block; }
+
+        .recipe-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
+        }
+
+        .recipe-card .recipe-name {
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .recipe-card .recipe-section-title {
+            margin: 8px 0 4px;
+        }
+
+        .recipe-card .recipe-list {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .recipe-card .recipe-steps {
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .recipe-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ee5a24;
+            margin: 12px 0 6px;
+            text-transform: uppercase;
+        }
+
+        .recipe-list {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.8;
+            padding-left: 16px;
+        }
+
+        .recipe-steps {
+            font-size: 14px;
+            color: #555;
+            line-height: 2;
+        }
+
+        .recipe-steps li { margin-bottom: 4px; }
+
+        .no-recipe {
+            text-align: center;
+            color: #aaa;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .history-section {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 16px;
+        }
+
+        .history-title {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .history-item {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            color: #888;
+        }
+
+        .clear-history {
+            font-size: 12px;
+            color: #ccc;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        .clear-history:hover { color: #ff6b6b; }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ee5a24;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            background: white;
+            color: #ee5a24;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover { background: #fff5f0; }
+
+        .empty-hint {
+            text-align: center;
+            color: #ccc;
+            font-size: 14px;
+            padding: 20px 0;
+        }
+
+        .exclusion-section {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .exclusion-chip {
+            padding: 5px 12px;
+            background: #fff0f0;
+            border: 1px solid #ffcccc;
+            border-radius: 14px;
+            font-size: 12px;
+            color: #e74c3c;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .exclusion-chip .remove {
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>今天吃什么</h1>
+            <p>选择困难症终结者</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('delivery')">点外卖</button>
+            <button class="tab" onclick="switchTab('cook')">自己做</button>
+        </div>
+
+        <!-- 外卖 -->
+        <div id="delivery" class="panel active">
+            <div class="exclusion-section">
+                <div class="fridge-label">不吃什么（输入菜系或食物名，会自动排除）</div>
+                <div class="custom-input-row">
+                    <input type="text" id="exclusionInput" placeholder="如：西餐、内脏、香菜..." onkeydown="if(event.key==='Enter')addExclusion()">
+                    <button onclick="addExclusion()">添加</button>
+                </div>
+                <div class="selected-ingredients" id="exclusionList"></div>
+            </div>
+
+            <div class="result-box" id="deliveryResult">
+                <span class="result-placeholder">点击下方按钮决定命运</span>
+            </div>
+            <button class="btn" onclick="rollDelivery()">🎲 随机一下！</button>
+
+            <div class="history-section" id="deliveryHistorySection" style="display:none;">
+                <div class="history-title">
+                    最近吃过的
+                    <span class="clear-history" onclick="clearHistory('delivery')">清空</span>
+                </div>
+                <div class="history-list" id="deliveryHistory"></div>
+            </div>
+        </div>
+
+        <!-- 做饭 -->
+        <div id="cook" class="panel">
+            <div class="fridge-section">
+                <div class="fridge-label">选择你冰箱里的食材</div>
+                <div class="tag-group" id="commonTags"></div>
+
+                <div class="custom-input-row">
+                    <input type="text" id="customIngredient" placeholder="添加其他食材..." onkeydown="if(event.key==='Enter')addCustom()">
+                    <button onclick="addCustom()">添加</button>
+                </div>
+
+                <div class="selected-ingredients" id="selectedList"></div>
+            </div>
+
+            <button class="btn" onclick="rollCook()">🍳 能做什么菜？</button>
+
+            <div class="recipe-result" id="recipeResult"></div>
+
+            <div class="history-section" id="cookHistorySection" style="display:none;">
+                <div class="history-title">
+                    做过的菜
+                    <span class="clear-history" onclick="clearHistory('cook')">清空</span>
+                </div>
+                <div class="history-list" id="cookHistory"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ============ 数据 ============
+
+const deliveryData = [
+    // 快餐
+    { name: "黄焖鸡米饭", emoji: "🍗", tag: "快餐" },
+    { name: "炒饭", emoji: "🍚", tag: "快餐" },
+    { name: "盖浇饭", emoji: "🍚", tag: "快餐" },
+    { name: "卤肉饭", emoji: "🍚", tag: "快餐" },
+    { name: "猪脚饭", emoji: "🍖", tag: "快餐" },
+    { name: "烤肉饭", emoji: "🥩", tag: "快餐" },
+    { name: "铁板饭", emoji: "🍳", tag: "快餐" },
+    { name: "咖喱饭", emoji: "🍛", tag: "快餐" },
+    { name: "泡椒凤爪", emoji: "🍗", tag: "快餐" },
+    // 面食
+    { name: "兰州拉面", emoji: "🍜", tag: "面食" },
+    { name: "饺子", emoji: "🥟", tag: "面食" },
+    { name: "馄饨", emoji: "🥟", tag: "面食" },
+    { name: "小笼包", emoji: "🥟", tag: "面食" },
+    { name: "刀削面", emoji: "🍜", tag: "面食" },
+    { name: "炸酱面", emoji: "🍜", tag: "面食" },
+    { name: "热干面", emoji: "🍜", tag: "面食" },
+    { name: "biangbiang面", emoji: "🍜", tag: "面食" },
+    { name: "拌面", emoji: "🍜", tag: "面食" },
+    { name: "水饺", emoji: "🥟", tag: "面食" },
+    { name: "生煎包", emoji: "🥟", tag: "面食" },
+    // 川味
+    { name: "麻辣烫", emoji: "🥘", tag: "川味" },
+    { name: "烤鱼", emoji: "🐟", tag: "川味" },
+    { name: "酸菜鱼", emoji: "🐟", tag: "川味" },
+    { name: "冒菜", emoji: "🥘", tag: "川味" },
+    { name: "钵钵鸡", emoji: "🍢", tag: "川味" },
+    { name: "水煮肉片", emoji: "🥩", tag: "川味" },
+    { name: "回锅肉", emoji: "🥩", tag: "川味" },
+    { name: "毛血旺", emoji: "🥘", tag: "川味" },
+    { name: "干锅", emoji: "🥘", tag: "川味" },
+    { name: "夫妻肺片", emoji: "🥩", tag: "川味" },
+    { name: "口水鸡", emoji: "🍗", tag: "川味" },
+    // 粉面
+    { name: "螺蛳粉", emoji: "🍜", tag: "粉面" },
+    { name: "过桥米线", emoji: "🍜", tag: "粉面" },
+    { name: "重庆小面", emoji: "🍜", tag: "粉面" },
+    { name: "酸辣粉", emoji: "🍜", tag: "粉面" },
+    { name: "桂林米粉", emoji: "🍜", tag: "粉面" },
+    { name: "炒米粉", emoji: "🍜", tag: "粉面" },
+    { name: "土豆粉", emoji: "🍜", tag: "粉面" },
+    // 小吃
+    { name: "沙县小吃", emoji: "🥟", tag: "小吃" },
+    { name: "煎饼果子", emoji: "🫓", tag: "小吃" },
+    { name: "肉夹馍", emoji: "🫓", tag: "小吃" },
+    { name: "凉皮", emoji: "🥡", tag: "小吃" },
+    { name: "鸡蛋灌饼", emoji: "🫓", tag: "小吃" },
+    { name: "手抓饼", emoji: "🫓", tag: "小吃" },
+    { name: "臭豆腐", emoji: "🫓", tag: "小吃" },
+    { name: "烤冷面", emoji: "🫓", tag: "小吃" },
+    { name: "春卷", emoji: "🥟", tag: "小吃" },
+    { name: "烧麦", emoji: "🥟", tag: "小吃" },
+    // 烧烤
+    { name: "烤串", emoji: "🍢", tag: "烧烤" },
+    { name: "铁板烧", emoji: "🥩", tag: "烧烤" },
+    { name: "烤肉", emoji: "🥩", tag: "烧烤" },
+    { name: "炸鸡", emoji: "🍗", tag: "烧烤" },
+    { name: "炸串", emoji: "🍢", tag: "烧烤" },
+    { name: "烤鸭", emoji: "🦆", tag: "烧烤" },
+    { name: "羊蝎子", emoji: "🍖", tag: "烧烤" },
+    // 西式
+    { name: "麦当劳", emoji: "🍔", tag: "西式" },
+    { name: "肯德基", emoji: "🍗", tag: "西式" },
+    { name: "必胜客", emoji: "🍕", tag: "西式" },
+    { name: "披萨", emoji: "🍕", tag: "西式" },
+    { name: "汉堡王", emoji: "🍔", tag: "西式" },
+    { name: "牛排", emoji: "🥩", tag: "西式" },
+    { name: "意面", emoji: "🍝", tag: "西式" },
+    { name: "三明治", emoji: "🥪", tag: "西式" },
+    { name: "赛百味", emoji: "🥪", tag: "西式" },
+    { name: "华莱士", emoji: "🍔", tag: "西式" },
+    { name: "塔可", emoji: "🌮", tag: "西式" },
+    // 日料
+    { name: "寿司", emoji: "🍣", tag: "日料" },
+    { name: "拉面/日式面", emoji: "🍜", tag: "日料" },
+    { name: "日式咖喱", emoji: "🍛", tag: "日料" },
+    { name: "天妇罗", emoji: "🍤", tag: "日料" },
+    { name: "鳗鱼饭", emoji: "🐟", tag: "日料" },
+    { name: "章鱼小丸子", emoji: "🐙", tag: "日料" },
+    { name: "大阪烧", emoji: "🥞", tag: "日料" },
+    { name: "刺身", emoji: "🍣", tag: "日料" },
+    // 韩餐
+    { name: "韩式拌饭", emoji: "🍚", tag: "韩餐" },
+    { name: "韩式炸鸡", emoji: "🍗", tag: "韩餐" },
+    { name: "石锅拌饭", emoji: "🍚", tag: "韩餐" },
+    { name: "部队锅", emoji: "🍲", tag: "韩餐" },
+    { name: "韩式烤肉", emoji: "🥩", tag: "韩餐" },
+    { name: "泡菜汤", emoji: "🥘", tag: "韩餐" },
+    { name: "冷面", emoji: "🍜", tag: "韩餐" },
+    { name: "紫菜包饭", emoji: "🍙", tag: "韩餐" },
+    // 粤菜
+    { name: "粤式烧腊", emoji: "🍖", tag: "粤菜" },
+    { name: "煲仔饭", emoji: "🍚", tag: "粤菜" },
+    { name: "肠粉", emoji: "🥟", tag: "粤菜" },
+    { name: "虾饺", emoji: "🥟", tag: "粤菜" },
+    { name: "叉烧饭", emoji: "🍖", tag: "粤菜" },
+    { name: "白切鸡", emoji: "🍗", tag: "粤菜" },
+    { name: "艇仔粥", emoji: "🥣", tag: "粤菜" },
+    { name: "云吞面", emoji: "🍜", tag: "粤菜" },
+    // 东南亚
+    { name: "泰式炒河粉", emoji: "🍜", tag: "东南亚" },
+    { name: "越南粉", emoji: "🍜", tag: "东南亚" },
+    { name: "冬阴功汤", emoji: "🥘", tag: "东南亚" },
+    { name: "海南鸡饭", emoji: "🍗", tag: "东南亚" },
+    { name: "印度飞饼", emoji: "🫓", tag: "东南亚" },
+    { name: "叻沙", emoji: "🍜", tag: "东南亚" },
+    // 西北
+    { name: "新疆大盘鸡", emoji: "🍗", tag: "西北" },
+    { name: "羊肉泡馍", emoji: "🥘", tag: "西北" },
+    { name: "烤全羊", emoji: "🍖", tag: "西北" },
+    { name: "馕", emoji: "🫓", tag: "西北" },
+    { name: "新疆炒米粉", emoji: "🍜", tag: "西北" },
+    // 东北
+    { name: "东北铁锅炖", emoji: "🍲", tag: "东北" },
+    { name: "锅包肉", emoji: "🥩", tag: "东北" },
+    { name: "东北饺子", emoji: "🥟", tag: "东北" },
+    { name: "地三鲜", emoji: "🍆", tag: "东北" },
+    { name: "杀猪菜", emoji: "🍖", tag: "东北" },
+    // 其他
+    { name: "奶茶+甜点", emoji: "🧋", tag: "饮品" },
+    { name: "轻食沙拉", emoji: "🥗", tag: "健康" },
+    { name: "麻辣香锅", emoji: "🥘", tag: "川味" },
+    { name: "火锅外卖", emoji: "🍲", tag: "川味" },
+    { name: "北京烤鸭", emoji: "🦆", tag: "京菜" },
+    { name: "卤煮", emoji: "🥘", tag: "京菜" },
+    { name: "炒肝", emoji: "🥣", tag: "京菜" },
+    { name: "豆汁焦圈", emoji: "🥣", tag: "京菜" },
+    { name: "小龙虾", emoji: "🦞", tag: "海鲜" },
+    { name: "海鲜粥", emoji: "🥣", tag: "海鲜" },
+    { name: "潮汕牛肉火锅", emoji: "🍲", tag: "潮汕" },
+    { name: "潮汕砂锅粥", emoji: "🥣", tag: "潮汕" },
+    { name: "生腌", emoji: "🦐", tag: "潮汕" },
+];
+
+const commonIngredients = [
+    // 蛋奶
+    { name: "鸡蛋", emoji: "🥚", cat: "蛋奶" },
+    { name: "牛奶", emoji: "🥛", cat: "蛋奶" },
+    // 肉类
+    { name: "猪肉", emoji: "🥩", cat: "肉类" },
+    { name: "牛肉", emoji: "🥩", cat: "肉类" },
+    { name: "鸡肉", emoji: "🍗", cat: "肉类" },
+    { name: "鸡翅", emoji: "🍗", cat: "肉类" },
+    { name: "排骨", emoji: "🍖", cat: "肉类" },
+    { name: "五花肉", emoji: "🥩", cat: "肉类" },
+    { name: "里脊肉", emoji: "🥩", cat: "肉类" },
+    { name: "腊肠", emoji: "🌭", cat: "肉类" },
+    { name: "火腿", emoji: "🌭", cat: "肉类" },
+    // 海鲜
+    { name: "虾", emoji: "🦐", cat: "海鲜" },
+    { name: "鱼", emoji: "🐟", cat: "海鲜" },
+    { name: "鱿鱼", emoji: "🦑", cat: "海鲜" },
+    { name: "蛤蜊", emoji: "🐚", cat: "海鲜" },
+    // 蔬菜
+    { name: "番茄", emoji: "🍅", cat: "蔬菜" },
+    { name: "土豆", emoji: "🥔", cat: "蔬菜" },
+    { name: "青椒", emoji: "🫑", cat: "蔬菜" },
+    { name: "白菜", emoji: "🥬", cat: "蔬菜" },
+    { name: "黄瓜", emoji: "🥒", cat: "蔬菜" },
+    { name: "胡萝卜", emoji: "🥕", cat: "蔬菜" },
+    { name: "洋葱", emoji: "🧅", cat: "蔬菜" },
+    { name: "蘑菇", emoji: "🍄", cat: "蔬菜" },
+    { name: "西兰花", emoji: "🥦", cat: "蔬菜" },
+    { name: "茄子", emoji: "🍆", cat: "蔬菜" },
+    { name: "豆角", emoji: "🫘", cat: "蔬菜" },
+    { name: "玉米", emoji: "🌽", cat: "蔬菜" },
+    { name: "生菜", emoji: "🥬", cat: "蔬菜" },
+    { name: "菠菜", emoji: "🥬", cat: "蔬菜" },
+    { name: "芹菜", emoji: "🥬", cat: "蔬菜" },
+    { name: "韭菜", emoji: "🥬", cat: "蔬菜" },
+    { name: "花菜", emoji: "🥦", cat: "蔬菜" },
+    { name: "莴笋", emoji: "🥬", cat: "蔬菜" },
+    { name: "南瓜", emoji: "🎃", cat: "蔬菜" },
+    { name: "冬瓜", emoji: "🥒", cat: "蔬菜" },
+    { name: "莲藕", emoji: "🪷", cat: "蔬菜" },
+    { name: "山药", emoji: "🥔", cat: "蔬菜" },
+    { name: "金针菇", emoji: "🍄", cat: "蔬菜" },
+    { name: "杏鲍菇", emoji: "🍄", cat: "蔬菜" },
+    { name: "木耳", emoji: "🍄", cat: "蔬菜" },
+    { name: "豆芽", emoji: "🫘", cat: "蔬菜" },
+    // 豆制品
+    { name: "豆腐", emoji: "🧈", cat: "豆制品" },
+    { name: "腐竹", emoji: "🧈", cat: "豆制品" },
+    { name: "豆皮", emoji: "🧈", cat: "豆制品" },
+    // 主食
+    { name: "米饭", emoji: "🍚", cat: "主食" },
+    { name: "面条", emoji: "🍜", cat: "主食" },
+    { name: "年糕", emoji: "🍡", cat: "主食" },
+    { name: "粉丝", emoji: "🍜", cat: "主食" },
+    { name: "饺子皮", emoji: "🥟", cat: "主食" },
+    { name: "面粉", emoji: "🌾", cat: "主食" },
+    // 调料/配料
+    { name: "大蒜", emoji: "🧄", cat: "调料" },
+    { name: "葱", emoji: "🧅", cat: "调料" },
+    { name: "姜", emoji: "🫚", cat: "调料" },
+    { name: "干辣椒", emoji: "🌶️", cat: "调料" },
+    { name: "豆瓣酱", emoji: "🫙", cat: "调料" },
+    { name: "番茄酱", emoji: "🫙", cat: "调料" },
+];
+
+// 菜谱数据库：食材组合 -> 菜谱
+const recipeDB = [
+    // ===== 蛋类 =====
+    {
+        name: "番茄炒蛋",
+        need: ["番茄", "鸡蛋"],
+        ingredients: ["番茄 2个", "鸡蛋 3个", "葱花适量", "盐、糖少许"],
+        steps: ["番茄切块，鸡蛋打散加少许盐", "热锅凉油，炒蛋至凝固盛出", "锅中加油，炒番茄至出汁", "倒回鸡蛋，加糖和盐调味", "撒葱花出锅"]
+    },
+    {
+        name: "番茄蛋汤",
+        need: ["番茄", "鸡蛋"],
+        ingredients: ["番茄 2个", "鸡蛋 2个", "葱花、盐、香油"],
+        steps: ["番茄切小块", "锅中炒番茄至出汁", "加水烧开", "淋入蛋液，轻轻搅动", "加盐和香油，撒葱花"]
+    },
+    {
+        name: "黄瓜炒鸡蛋",
+        need: ["黄瓜", "鸡蛋"],
+        ingredients: ["黄瓜 2根", "鸡蛋 3个", "盐、葱花"],
+        steps: ["黄瓜切片，鸡蛋打散", "炒蛋盛出", "锅中炒黄瓜1分钟", "倒回鸡蛋翻炒，调味出锅"]
+    },
+    {
+        name: "青椒鸡蛋",
+        need: ["青椒", "鸡蛋"],
+        ingredients: ["青椒 3个", "鸡蛋 3个", "盐、蒜末"],
+        steps: ["青椒切丝，鸡蛋打散", "炒蛋盛出", "锅中炒青椒至断生", "倒回鸡蛋翻炒调味出锅"]
+    },
+    {
+        name: "虾仁滑蛋",
+        need: ["虾", "鸡蛋"],
+        ingredients: ["虾仁 200g", "鸡蛋 4个", "葱花、盐、料酒"],
+        steps: ["虾仁加料酒腌5分钟", "鸡蛋打散加少许水和盐", "锅中滑炒虾仁至变色", "倒入蛋液，轻轻推动至半凝固", "撒葱花出锅"]
+    },
+    {
+        name: "蘑菇蛋花汤",
+        need: ["蘑菇", "鸡蛋"],
+        ingredients: ["蘑菇 150g", "鸡蛋 2个", "葱花、盐"],
+        steps: ["蘑菇切片", "锅中加水烧开下蘑菇", "煮3分钟", "淋入蛋液搅散", "加盐撒葱花出锅"]
+    },
+    {
+        name: "生菜炒鸡蛋",
+        need: ["生菜", "鸡蛋"],
+        ingredients: ["生菜 1棵", "鸡蛋 3个", "蒜末、盐"],
+        steps: ["生菜洗净撕片，鸡蛋打散", "炒蛋盛出", "锅中炒蒜末，下生菜快炒", "倒回鸡蛋翻炒，调味出锅"]
+    },
+    {
+        name: "菠菜鸡蛋汤",
+        need: ["菠菜", "鸡蛋"],
+        ingredients: ["菠菜 1把", "鸡蛋 2个", "盐、香油"],
+        steps: ["菠菜焯水切段", "锅中加水烧开", "放入菠菜煮1分钟", "淋入蛋液搅散", "加盐和香油出锅"]
+    },
+    {
+        name: "鸡蛋羹",
+        need: ["鸡蛋"],
+        ingredients: ["鸡蛋 3个", "温水、盐、香油、生抽"],
+        steps: ["鸡蛋打散，加1.5倍温水和盐", "过滤蛋液", "盖保鲜膜扎小孔", "大火蒸12分钟", "淋生抽和香油"]
+    },
+    {
+        name: "葱花煎蛋",
+        need: ["鸡蛋", "葱"],
+        ingredients: ["鸡蛋 3个", "葱花、盐"],
+        steps: ["鸡蛋打散加葱花和盐", "锅中加油烧热", "倒入蛋液", "煎至两面金黄出锅"]
+    },
+    {
+        name: "胡萝卜鸡蛋饼",
+        need: ["胡萝卜", "鸡蛋"],
+        ingredients: ["胡萝卜 1根", "鸡蛋 2个", "面粉、葱花、盐"],
+        steps: ["胡萝卜擦丝", "加鸡蛋、面粉、葱花、盐调成糊", "平底锅加油，倒入面糊摊平", "两面煎至金黄出锅"]
+    },
+    {
+        name: "韭菜炒鸡蛋",
+        need: ["韭菜", "鸡蛋"],
+        ingredients: ["韭菜 1把", "鸡蛋 3个", "盐"],
+        steps: ["韭菜切段，鸡蛋打散", "炒蛋盛出", "锅中炒韭菜至断生", "倒回鸡蛋翻炒调味出锅"]
+    },
+    {
+        name: "芹菜炒鸡蛋",
+        need: ["芹菜", "鸡蛋"],
+        ingredients: ["芹菜 200g", "鸡蛋 3个", "盐、蒜末"],
+        steps: ["芹菜切段焯水，鸡蛋打散", "炒蛋盛出", "锅中炒蒜末下芹菜翻炒", "倒回鸡蛋调味出锅"]
+    },
+    {
+        name: "花菜炒鸡蛋",
+        need: ["花菜", "鸡蛋"],
+        ingredients: ["花菜 半颗", "鸡蛋 3个", "蒜末、盐"],
+        steps: ["花菜掰小朵焯水，鸡蛋打散", "炒蛋盛出", "锅中炒蒜末下花菜翻炒", "倒回鸡蛋调味出锅"]
+    },
+    // ===== 猪肉类 =====
+    {
+        name: "青椒炒肉",
+        need: ["青椒", "猪肉"],
+        ingredients: ["猪肉 200g", "青椒 3个", "蒜末、生抽、料酒"],
+        steps: ["猪肉切片，加料酒、生抽腌10分钟", "青椒去籽切块", "热锅爆香蒜末，下肉片炒至变色", "加入青椒大火翻炒2分钟", "调味出锅"]
+    },
+    {
+        name: "红烧肉",
+        need: ["五花肉"],
+        ingredients: ["五花肉 500g", "冰糖、生抽、老抽、八角、姜片"],
+        steps: ["五花肉切块焯水", "锅中炒冰糖至焦糖色", "下五花肉翻炒上色", "加姜片八角、生抽老抽", "加水没过肉，小火炖1小时", "大火收汁"]
+    },
+    {
+        name: "糖醋里脊",
+        need: ["里脊肉"],
+        ingredients: ["里脊肉 300g", "番茄酱、醋、糖、淀粉、鸡蛋"],
+        steps: ["里脊切条，加蛋液和淀粉裹匀", "油炸至金黄捞出", "锅中加番茄酱2勺+醋1勺+糖2勺+水", "烧至冒泡，倒入里脊翻匀", "出锅撒芝麻"]
+    },
+    {
+        name: "胡萝卜炒肉丝",
+        need: ["胡萝卜", "猪肉"],
+        ingredients: ["胡萝卜 2根", "猪肉 150g", "青椒1个", "生抽、淀粉"],
+        steps: ["猪肉切丝腌制", "胡萝卜、青椒切丝", "炒肉丝变色盛出", "炒胡萝卜至软，加青椒", "倒回肉丝翻炒出锅"]
+    },
+    {
+        name: "豆角炒肉",
+        need: ["豆角", "猪肉"],
+        ingredients: ["豆角 300g", "猪肉 150g", "蒜末、干辣椒、生抽"],
+        steps: ["豆角掰段，猪肉切片", "豆角焯水至断生", "炒肉片出油，加蒜末干辣椒", "下豆角大火翻炒", "调味出锅"]
+    },
+    {
+        name: "蘑菇炒肉",
+        need: ["蘑菇", "猪肉"],
+        ingredients: ["蘑菇 200g", "猪肉 150g", "青椒、蒜末、生抽"],
+        steps: ["蘑菇切片，猪肉切片", "炒肉片变色盛出", "炒蘑菇至出水收干", "加青椒蒜末翻炒", "倒回肉片调味出锅"]
+    },
+    {
+        name: "土豆炒肉片",
+        need: ["土豆", "猪肉"],
+        ingredients: ["土豆 2个", "猪肉 150g", "青椒、蒜末、生抽"],
+        steps: ["土豆切片泡水", "猪肉切片腌制", "炒肉片变色盛出", "炒土豆片至透明", "加青椒蒜末，倒回肉片翻炒"]
+    },
+    {
+        name: "肉末茄子",
+        need: ["茄子", "猪肉"],
+        ingredients: ["茄子 2根", "猪肉末 100g", "蒜末、豆瓣酱、生抽"],
+        steps: ["茄子切条撒盐腌出水挤干", "炒肉末变色，加豆瓣酱", "下茄子翻炒", "加生抽和少许水焖5分钟", "收汁出锅"]
+    },
+    {
+        name: "白菜猪肉饺子",
+        need: ["白菜", "猪肉"],
+        ingredients: ["白菜 半棵", "猪肉馅 300g", "饺子皮、葱姜、生抽、盐"],
+        steps: ["白菜剁碎挤水", "肉馅加葱姜、生抽、盐搅匀", "加入白菜拌匀", "包饺子", "煮饺子至浮起再煮2分钟"]
+    },
+    {
+        name: "韭菜猪肉饺子",
+        need: ["韭菜", "猪肉"],
+        ingredients: ["韭菜 1把", "猪肉馅 300g", "饺子皮、姜末、生抽、盐"],
+        steps: ["韭菜切碎", "肉馅加姜末、生抽、盐搅匀", "加入韭菜拌匀", "包饺子", "煮饺子至浮起再煮2分钟"]
+    },
+    {
+        name: "芹菜炒肉",
+        need: ["芹菜", "猪肉"],
+        ingredients: ["芹菜 200g", "猪肉 150g", "蒜末、生抽、料酒"],
+        steps: ["芹菜切段，猪肉切片腌制", "炒肉片变色盛出", "锅中炒芹菜至断生", "倒回肉片翻炒调味出锅"]
+    },
+    {
+        name: "莴笋炒肉",
+        need: ["莴笋", "猪肉"],
+        ingredients: ["莴笋 2根", "猪肉 150g", "蒜末、生抽"],
+        steps: ["莴笋去皮切片，猪肉切片", "炒肉片变色盛出", "锅中炒莴笋至断生", "倒回肉片翻炒调味出锅"]
+    },
+    {
+        name: "冬瓜排骨汤",
+        need: ["冬瓜", "排骨"],
+        ingredients: ["冬瓜 500g", "排骨 300g", "姜片、盐"],
+        steps: ["排骨焯水洗净", "冬瓜切块", "锅中加水放排骨和姜片", "大火烧开转小火炖40分钟", "加冬瓜再炖15分钟，调味出锅"]
+    },
+    {
+        name: "莲藕排骨汤",
+        need: ["莲藕", "排骨"],
+        ingredients: ["莲藕 2节", "排骨 300g", "姜片、盐"],
+        steps: ["排骨焯水洗净", "莲藕切块", "所有食材放入锅中加水", "大火烧开转小火炖1小时", "加盐调味"]
+    },
+    {
+        name: "山药排骨汤",
+        need: ["山药", "排骨"],
+        ingredients: ["山药 2根", "排骨 300g", "枸杞、姜片、盐"],
+        steps: ["排骨焯水洗净", "山药去皮切块", "锅中加水放排骨和姜片", "炖40分钟后加山药", "再炖20分钟，加枸杞和盐"]
+    },
+    {
+        name: "南瓜蒸排骨",
+        need: ["南瓜", "排骨"],
+        ingredients: ["南瓜 半个", "排骨 300g", "豆豉、蒜末、生抽、淀粉"],
+        steps: ["排骨加豆豉蒜末生抽淀粉腌20分钟", "南瓜切块铺盘底", "排骨摆上面", "大火蒸25分钟出锅"]
+    },
+    {
+        name: "花菜炒肉",
+        need: ["花菜", "猪肉"],
+        ingredients: ["花菜 半颗", "猪肉 150g", "干辣椒、蒜末、生抽"],
+        steps: ["花菜掰小朵焯水，猪肉切片", "炒肉片变色盛出", "锅中炒干辣椒蒜末下花菜", "倒回肉片翻炒调味出锅"]
+    },
+    {
+        name: "木耳炒肉",
+        need: ["木耳", "猪肉"],
+        ingredients: ["木耳 适量", "猪肉 150g", "青椒、蒜末、生抽"],
+        steps: ["木耳泡发撕小朵，猪肉切片", "炒肉片变色盛出", "锅中炒木耳和青椒", "倒回肉片翻炒调味出锅"]
+    },
+    {
+        name: "金针菇肥牛卷",
+        need: ["金针菇", "牛肉"],
+        ingredients: ["金针菇 1把", "肥牛卷 200g", "生抽、蚝油、蒜末"],
+        steps: ["金针菇洗净，用肥牛卷卷好", "锅中少油煎至两面变色", "加蒜末、生抽、蚝油和少许水", "焖煮3分钟收汁出锅"]
+    },
+    {
+        name: "豆皮肉卷",
+        need: ["豆皮", "猪肉"],
+        ingredients: ["豆皮 2张", "猪肉馅 200g", "葱姜、生抽、盐"],
+        steps: ["肉馅加葱姜生抽盐拌匀", "豆皮铺平，放上肉馅卷紧", "上锅蒸20分钟", "切片装盘"]
+    },
+    {
+        name: "腐竹炒肉",
+        need: ["腐竹", "猪肉"],
+        ingredients: ["腐竹 适量", "猪肉 150g", "青椒、蒜末、生抽"],
+        steps: ["腐竹泡软切段，猪肉切片", "炒肉片变色盛出", "锅中炒腐竹和青椒", "倒回肉片翻炒调味出锅"]
+    },
+    // ===== 牛肉类 =====
+    {
+        name: "土豆炖牛肉",
+        need: ["土豆", "牛肉"],
+        ingredients: ["牛肉 300g", "土豆 2个", "胡萝卜 1根", "葱姜蒜、八角、生抽、老抽"],
+        steps: ["牛肉切块焯水", "土豆胡萝卜切块", "锅中加油炒牛肉，加葱姜蒜八角", "加生抽老抽上色，加水没过牛肉", "大火烧开转小火炖40分钟", "加土豆胡萝卜再炖20分钟"]
+    },
+    {
+        name: "洋葱炒牛肉",
+        need: ["洋葱", "牛肉"],
+        ingredients: ["牛肉 250g", "洋葱 1个", "生抽、黑胡椒、淀粉"],
+        steps: ["牛肉切片加生抽淀粉腌10分钟", "洋葱切丝", "大火炒牛肉至变色盛出", "炒洋葱至透明", "倒回牛肉，撒黑胡椒翻炒出锅"]
+    },
+    {
+        name: "番茄牛肉汤",
+        need: ["番茄", "牛肉"],
+        ingredients: ["番茄 2个", "牛肉 200g", "洋葱半个", "盐、黑胡椒"],
+        steps: ["牛肉切薄片", "番茄和洋葱切块", "锅中炒洋葱和番茄至软", "加水烧开", "下牛肉片煮至变色", "调味出锅"]
+    },
+    {
+        name: "西兰花炒牛肉",
+        need: ["西兰花", "牛肉"],
+        ingredients: ["牛肉 200g", "西兰花 1颗", "蒜末、生抽、蚝油、淀粉"],
+        steps: ["牛肉切片加生抽淀粉腌10分钟", "西兰花掰小朵焯水", "大火炒牛肉至变色盛出", "锅中炒蒜末下西兰花", "倒回牛肉，加蚝油翻炒出锅"]
+    },
+    {
+        name: "芹菜炒牛肉",
+        need: ["芹菜", "牛肉"],
+        ingredients: ["牛肉 200g", "芹菜 200g", "蒜末、生抽、料酒"],
+        steps: ["牛肉切片加料酒生抽腌制", "芹菜切段", "大火炒牛肉变色盛出", "锅中炒芹菜至断生", "倒回牛肉翻炒调味出锅"]
+    },
+    {
+        name: "金针菇肥牛汤",
+        need: ["金针菇", "牛肉"],
+        ingredients: ["金针菇 1把", "肥牛卷 200g", "番茄 1个", "盐、白胡椒"],
+        steps: ["番茄切块", "锅中炒番茄加水烧开", "下金针菇煮3分钟", "加入肥牛卷煮至变色", "调味出锅"]
+    },
+    {
+        name: "南瓜牛肉粥",
+        need: ["南瓜", "牛肉"],
+        ingredients: ["南瓜 200g", "牛肉 100g", "大米、姜丝、盐"],
+        steps: ["大米加水煮粥", "南瓜切丁，牛肉切小粒", "粥煮至浓稠加入南瓜和牛肉", "再煮10分钟，调味出锅"]
+    },
+    // ===== 鸡肉类 =====
+    {
+        name: "可乐鸡翅",
+        need: ["鸡翅"],
+        ingredients: ["鸡翅 8个", "可乐 1罐", "生抽、老抽、姜片"],
+        steps: ["鸡翅两面划刀，冷水焯水", "锅中少油煎鸡翅至两面金黄", "加姜片、生抽、老抽", "倒入可乐没过鸡翅", "大火烧开转小火收汁"]
+    },
+    {
+        name: "土豆炖鸡块",
+        need: ["土豆", "鸡肉"],
+        ingredients: ["鸡肉 300g", "土豆 2个", "青椒、姜蒜、生抽、老抽"],
+        steps: ["鸡肉切块焯水", "土豆切块", "锅中炒鸡块加姜蒜", "加生抽老抽上色，加水炖20分钟", "加土豆炖15分钟，加青椒出锅"]
+    },
+    {
+        name: "蘑菇炖鸡",
+        need: ["蘑菇", "鸡肉"],
+        ingredients: ["鸡肉 300g", "蘑菇 200g", "姜蒜、生抽、料酒"],
+        steps: ["鸡肉切块焯水", "蘑菇切片", "锅中炒鸡块加姜蒜", "加生抽料酒和水炖20分钟", "加蘑菇再炖10分钟出锅"]
+    },
+    {
+        name: "玉米鸡丁",
+        need: ["玉米", "鸡肉"],
+        ingredients: ["鸡胸肉 200g", "玉米 2根", "青豆、胡萝卜丁、盐"],
+        steps: ["鸡胸肉切丁腌制", "玉米剥粒", "炒鸡丁变色盛出", "锅中炒玉米青豆胡萝卜", "倒回鸡丁翻炒调味出锅"]
+    },
+    {
+        name: "咖喱鸡肉饭",
+        need: ["鸡肉", "土豆"],
+        ingredients: ["鸡肉 300g", "土豆 2个", "胡萝卜 1根", "洋葱半个", "咖喱块"],
+        steps: ["鸡肉切块，土豆胡萝卜切块", "锅中炒洋葱加鸡肉炒变色", "加土豆胡萝卜和水煮15分钟", "关火放入咖喱块搅化", "小火煮至浓稠配米饭"]
+    },
+    // ===== 虾类 =====
+    {
+        name: "西兰花炒虾仁",
+        need: ["西兰花", "虾"],
+        ingredients: ["虾仁 200g", "西兰花 1颗", "蒜末、料酒、盐"],
+        steps: ["虾仁加料酒腌5分钟", "西兰花掰小朵焯水", "热锅炒虾仁至变色盛出", "锅中炒蒜末，下西兰花翻炒", "倒回虾仁，调味出锅"]
+    },
+    {
+        name: "蒜蓉蒸虾",
+        need: ["虾", "大蒜"],
+        ingredients: ["大虾 10只", "蒜 1头", "粉丝、生抽、葱花"],
+        steps: ["虾开背去虾线", "蒜切末炒香", "粉丝泡软铺盘底，虾摆上面", "浇上蒜蓉和生抽", "大火蒸8分钟，撒葱花"]
+    },
+    {
+        name: "虾仁豆腐汤",
+        need: ["虾", "豆腐"],
+        ingredients: ["虾仁 150g", "嫩豆腐 1块", "葱花、盐、白胡椒"],
+        steps: ["豆腐切小块", "锅中加水烧开", "放入豆腐煮3分钟", "加入虾仁煮至变色", "加盐和白胡椒，撒葱花"]
+    },
+    {
+        name: "虾仁炒鸡蛋",
+        need: ["虾", "鸡蛋"],
+        ingredients: ["虾仁 200g", "鸡蛋 3个", "葱花、盐、料酒"],
+        steps: ["虾仁加料酒腌5分钟", "鸡蛋打散", "锅中滑炒虾仁至变色", "倒入蛋液推至半凝固", "撒葱花出锅"]
+    },
+    {
+        name: "黄瓜虾仁",
+        need: ["黄瓜", "虾"],
+        ingredients: ["黄瓜 2根", "虾仁 200g", "蒜末、料酒、盐"],
+        steps: ["黄瓜切丁，虾仁腌制", "炒虾仁变色盛出", "锅中炒黄瓜丁", "倒回虾仁翻炒调味出锅"]
+    },
+    {
+        name: "芹菜炒虾仁",
+        need: ["芹菜", "虾"],
+        ingredients: ["芹菜 200g", "虾仁 200g", "蒜末、料酒、盐"],
+        steps: ["虾仁加料酒腌制", "芹菜切段", "炒虾仁变色盛出", "锅中炒芹菜至断生", "倒回虾仁翻炒调味出锅"]
+    },
+    {
+        name: "鱿鱼炒芹菜",
+        need: ["鱿鱼", "芹菜"],
+        ingredients: ["鱿鱼 200g", "芹菜 200g", "蒜末、料酒、盐"],
+        steps: ["鱿鱼切花刀焯水", "芹菜切段", "锅中爆香蒜末", "下鱿鱼和芹菜大火翻炒", "调味出锅"]
+    },
+    {
+        name: "蛤蜊蒸蛋",
+        need: ["蛤蜊", "鸡蛋"],
+        ingredients: ["蛤蜊 200g", "鸡蛋 3个", "葱花、盐、生抽"],
+        steps: ["蛤蜊焯水开口捞出", "鸡蛋打散加温水和盐", "蛤蜊摆盘中，倒入蛋液", "大火蒸12分钟", "淋生抽撒葱花"]
+    },
+    // ===== 豆腐类 =====
+    {
+        name: "麻婆豆腐",
+        need: ["豆腐"],
+        ingredients: ["嫩豆腐 1块", "猪肉末 100g", "豆瓣酱、花椒粉、蒜末、葱花"],
+        steps: ["豆腐切小块，焯水沥干", "锅中炒肉末至变色，加豆瓣酱炒红油", "加水烧开，放入豆腐小火煮5分钟", "勾薄芡，撒花椒粉和葱花"]
+    },
+    {
+        name: "白菜炖豆腐",
+        need: ["白菜", "豆腐"],
+        ingredients: ["白菜 半棵", "豆腐 1块", "葱姜、盐"],
+        steps: ["白菜切段，豆腐切块", "锅中加油炒白菜帮至软", "加水烧开，放入豆腐", "炖10分钟，加白菜叶再炖5分钟", "调味出锅"]
+    },
+    {
+        name: "黄瓜拌腐竹",
+        need: ["黄瓜", "腐竹"],
+        ingredients: ["黄瓜 2根", "腐竹 适量", "蒜末、醋、生抽、辣椒油"],
+        steps: ["腐竹泡软切段焯水", "黄瓜拍碎切段", "加蒜末、醋、生抽、辣椒油拌匀", "冷藏10分钟更佳"]
+    },
+    {
+        name: "家常豆腐",
+        need: ["豆腐", "猪肉"],
+        ingredients: ["老豆腐 1块", "猪肉 100g", "青椒、木耳、蒜末、豆瓣酱"],
+        steps: ["豆腐切三角块煎至两面金黄", "猪肉切片", "锅中炒肉片加豆瓣酱", "下豆腐、青椒、木耳翻炒", "调味出锅"]
+    },
+    {
+        name: "豆腐鸡蛋汤",
+        need: ["豆腐", "鸡蛋"],
+        ingredients: ["嫩豆腐 1块", "鸡蛋 1个", "葱花、盐、香油"],
+        steps: ["豆腐切小块", "锅中加水烧开放豆腐", "煮3分钟", "淋入蛋液搅散", "加盐香油撒葱花"]
+    },
+    // ===== 茄子类 =====
+    {
+        name: "鱼香茄子",
+        need: ["茄子"],
+        ingredients: ["茄子 2根", "猪肉末 100g", "葱姜蒜、豆瓣酱、醋、糖、生抽"],
+        steps: ["茄子切条，撒盐腌10分钟挤水", "调鱼香汁：醋2勺+糖1勺+生抽2勺+淀粉水", "锅中加油炒肉末，加豆瓣酱炒出红油", "下茄子翻炒，倒入鱼香汁", "收汁撒葱花出锅"]
+    },
+    {
+        name: "蒜蓉烤茄子",
+        need: ["茄子", "大蒜"],
+        ingredients: ["茄子 2根", "蒜 1头", "小米辣、生抽、蚝油"],
+        steps: ["茄子对半切开划花刀", "蒜切末炒香加生抽蚝油", "浇在茄子上", "烤箱200度烤15分钟", "撒小米辣出锅"]
+    },
+    // ===== 土豆类 =====
+    {
+        name: "土豆丝",
+        need: ["土豆"],
+        ingredients: ["土豆 2个", "干辣椒、蒜末、醋、盐"],
+        steps: ["土豆切丝泡水去淀粉", "锅中加油爆香干辣椒蒜末", "下土豆丝大火翻炒", "加醋和盐调味", "炒至断生出锅"]
+    },
+    {
+        name: "酸辣土豆丝",
+        need: ["土豆", "干辣椒"],
+        ingredients: ["土豆 2个", "干辣椒 5个", "花椒、醋、盐"],
+        steps: ["土豆切丝泡水", "锅中爆香花椒和干辣椒", "下土豆丝大火翻炒", "加醋和盐调味", "炒至断生出锅"]
+    },
+    {
+        name: "土豆炖豆角",
+        need: ["土豆", "豆角"],
+        ingredients: ["土豆 2个", "豆角 300g", "猪肉 100g", "蒜末、生抽"],
+        steps: ["土豆切块，豆角掰段", "猪肉切片", "炒肉片加豆角翻炒", "加土豆和水炖15分钟", "调味收汁出锅"]
+    },
+    {
+        name: "土豆牛肉饼",
+        need: ["土豆", "牛肉"],
+        ingredients: ["土豆 2个", "牛肉馅 200g", "洋葱碎、盐、黑胡椒"],
+        steps: ["土豆蒸熟压泥", "加牛肉馅、洋葱碎、盐、黑胡椒拌匀", "捏成饼状", "平底锅煎至两面金黄"]
+    },
+    // ===== 其他蔬菜 =====
+    {
+        name: "蒜蓉西兰花",
+        need: ["西兰花", "大蒜"],
+        ingredients: ["西兰花 1颗", "蒜 5瓣", "盐、蚝油"],
+        steps: ["西兰花掰小朵焯水", "蒜切末", "锅中爆香蒜末", "下西兰花翻炒", "加蚝油和盐调味出锅"]
+    },
+    {
+        name: "清炒时蔬",
+        need: ["白菜"],
+        ingredients: ["白菜 1棵", "蒜末、盐"],
+        steps: ["白菜切段", "锅中爆香蒜末", "大火翻炒白菜", "加盐调味出锅"]
+    },
+    {
+        name: "蒜蓉蒸虾",
+        need: ["虾", "大蒜"],
+        ingredients: ["大虾 10只", "蒜 1头", "粉丝、生抽、葱花"],
+        steps: ["虾开背去虾线", "蒜切末炒香", "粉丝泡软铺盘底，虾摆上面", "浇上蒜蓉和生抽", "大火蒸8分钟，撒葱花"]
+    },
+    {
+        name: "豆角焖面",
+        need: ["豆角", "面条"],
+        ingredients: ["豆角 300g", "面条 200g", "猪肉 100g", "蒜末、生抽、老抽"],
+        steps: ["豆角掰段，猪肉切丝", "炒肉丝加豆角翻炒", "加生抽老抽和水", "水开后铺上面条", "盖盖焖8分钟，拌匀出锅"]
+    },
+    {
+        name: "玉米排骨汤",
+        need: ["玉米"],
+        ingredients: ["排骨 300g", "玉米 2根", "胡萝卜 1根", "姜片、盐"],
+        steps: ["排骨焯水洗净", "玉米切段，胡萝卜切块", "所有食材放入锅中加水", "大火烧开转小火炖1小时", "加盐调味"]
+    },
+    {
+        name: "玉米炒火腿",
+        need: ["玉米"],
+        ingredients: ["玉米 2根", "火腿肠 2根", "青豆、盐"],
+        steps: ["玉米剥粒，火腿切丁", "锅中加油炒玉米和青豆", "加火腿丁翻炒", "调味出锅"]
+    },
+    {
+        name: "冬瓜虾仁汤",
+        need: ["冬瓜", "虾"],
+        ingredients: ["冬瓜 300g", "虾仁 150g", "姜丝、盐、白胡椒"],
+        steps: ["冬瓜切片", "锅中加水烧开放冬瓜", "煮至冬瓜透明", "加入虾仁煮至变色", "调味出锅"]
+    },
+    {
+        name: "莲藕炒肉",
+        need: ["莲藕", "猪肉"],
+        ingredients: ["莲藕 2节", "猪肉 150g", "青椒、蒜末、醋"],
+        steps: ["莲藕切片泡醋水，猪肉切片", "炒肉片变色盛出", "锅中炒莲藕至断生", "加青椒蒜末，倒回肉片翻炒"]
+    },
+    {
+        name: "山药炒木耳",
+        need: ["山药", "木耳"],
+        ingredients: ["山药 200g", "木耳 适量", "青椒、蒜末、盐"],
+        steps: ["山药去皮切片泡水", "木耳泡发撕小朵", "锅中爆香蒜末", "下山药和木耳翻炒", "加青椒和盐调味出锅"]
+    },
+    {
+        name: "南瓜饼",
+        need: ["南瓜"],
+        ingredients: ["南瓜 300g", "糯米粉 200g", "白糖、面包糠"],
+        steps: ["南瓜蒸熟压泥", "加糯米粉和白糖揉成团", "捏成小饼裹面包糠", "平底锅煎至两面金黄"]
+    },
+    {
+        name: "芹菜炒豆干",
+        need: ["芹菜", "豆腐"],
+        ingredients: ["芹菜 200g", "豆干 150g", "蒜末、生抽"],
+        steps: ["芹菜切段，豆干切条", "锅中爆香蒜末", "下豆干煎至微黄", "加芹菜翻炒调味出锅"]
+    },
+    {
+        name: "木耳炒鸡蛋",
+        need: ["木耳", "鸡蛋"],
+        ingredients: ["木耳 适量", "鸡蛋 3个", "青椒、蒜末、盐"],
+        steps: ["木耳泡发撕小朵，鸡蛋打散", "炒蛋盛出", "锅中炒木耳和青椒", "倒回鸡蛋翻炒调味出锅"]
+    },
+    {
+        name: "金针菇日本豆腐",
+        need: ["金针菇", "豆腐"],
+        ingredients: ["金针菇 1把", "日本豆腐 2条", "蒜末、蚝油、生抽"],
+        steps: ["日本豆腐切段裹淀粉煎至金黄", "金针菇洗净铺盘底", "豆腐摆上面", "淋蒜末蚝油生抽", "烤箱烤10分钟或蒸8分钟"]
+    },
+    {
+        name: "蛤蜊豆腐汤",
+        need: ["蛤蜊", "豆腐"],
+        ingredients: ["蛤蜊 200g", "嫩豆腐 1块", "姜丝、葱花、盐"],
+        steps: ["蛤蜊吐沙洗净", "豆腐切小块", "锅中加水烧开放姜丝", "下蛤蜊煮至开口", "加豆腐煮3分钟，调味出锅"]
+    },
+    {
+        name: "鱿鱼豆腐煲",
+        need: ["鱿鱼", "豆腐"],
+        ingredients: ["鱿鱼 200g", "老豆腐 1块", "蒜末、豆瓣酱、葱花"],
+        steps: ["鱿鱼切花刀焯水", "豆腐切块煎至金黄", "锅中炒蒜末加豆瓣酱", "下鱿鱼和豆腐翻炒", "加少许水焖3分钟出锅"]
+    },
+];
+
+// ============ 状态 ============
+let selectedIngredients = [];
+let exclusions = JSON.parse(localStorage.getItem('exclusions') || '[]');
+let deliveryHistory = JSON.parse(localStorage.getItem('deliveryHistory') || '[]');
+let cookHistory = JSON.parse(localStorage.getItem('cookHistory') || '[]');
+
+// ============ Tab 切换 ============
+function switchTab(id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById(id).classList.add('active');
+}
+
+// ============ 外卖排除 ============
+function addExclusion() {
+    const input = document.getElementById('exclusionInput');
+    const val = input.value.trim();
+    if (!val || exclusions.includes(val)) { input.value = ''; return; }
+    exclusions.push(val);
+    localStorage.setItem('exclusions', JSON.stringify(exclusions));
+    input.value = '';
+    renderExclusions();
+}
+
+function removeExclusion(name) {
+    exclusions = exclusions.filter(i => i !== name);
+    localStorage.setItem('exclusions', JSON.stringify(exclusions));
+    renderExclusions();
+}
+
+function renderExclusions() {
+    const container = document.getElementById('exclusionList');
+    if (exclusions.length === 0) { container.innerHTML = ''; return; }
+    container.innerHTML = exclusions.map(name =>
+        `<span class="exclusion-chip">不吃 ${name}<span class="remove" onclick="removeExclusion('${name}')">&times;</span></span>`
+    ).join('');
+}
+
+function getAvailableDelivery() {
+    if (exclusions.length === 0) return deliveryData;
+    return deliveryData.filter(item => {
+        return !exclusions.some(ex => {
+            const lower = ex.toLowerCase();
+            return item.tag.toLowerCase().includes(lower) || item.name.toLowerCase().includes(lower);
+        });
+    });
+}
+
+// ============ 外卖随机 ============
+function rollDelivery() {
+    const box = document.getElementById('deliveryResult');
+    const available = getAvailableDelivery();
+
+    if (available.length === 0) {
+        box.innerHTML = '<span class="result-placeholder">排除太多了，没东西可吃了...</span>';
+        return;
+    }
+
+    box.classList.add('spin');
+
+    let count = 0;
+    const total = 20;
+    const interval = setInterval(() => {
+        const item = available[Math.floor(Math.random() * available.length)];
+        box.innerHTML = `<span class="result-emoji">${item.emoji}</span><span class="result-text">${item.name}</span>`;
+        count++;
+        if (count >= total) {
+            clearInterval(interval);
+            box.classList.remove('spin');
+            const final = available[Math.floor(Math.random() * available.length)];
+            box.innerHTML = `<span class="result-emoji">${final.emoji}</span><span class="result-text">${final.name}</span><span class="result-sub">${final.tag}</span>`;
+            addHistory('delivery', final.name);
+        }
+    }, 80);
+}
+
+// ============ 做饭 ============
+function initTags() {
+    const container = document.getElementById('commonTags');
+    commonIngredients.forEach(item => {
+        const tag = document.createElement('span');
+        tag.className = 'tag';
+        tag.textContent = `${item.emoji} ${item.name}`;
+        tag.onclick = () => toggleIngredient(item.name, tag);
+        container.appendChild(tag);
+    });
+}
+
+function toggleIngredient(name, el) {
+    if (selectedIngredients.includes(name)) {
+        selectedIngredients = selectedIngredients.filter(i => i !== name);
+        el.classList.remove('selected');
+    } else {
+        selectedIngredients.push(name);
+        el.classList.add('selected');
+    }
+    renderSelected();
+}
+
+function addCustom() {
+    const input = document.getElementById('customIngredient');
+    const val = input.value.trim();
+    if (!val || selectedIngredients.includes(val)) { input.value = ''; return; }
+    selectedIngredients.push(val);
+    input.value = '';
+    renderSelected();
+}
+
+function removeIngredient(name) {
+    selectedIngredients = selectedIngredients.filter(i => i !== name);
+    document.querySelectorAll('.tag').forEach(t => {
+        if (t.textContent.includes(name)) t.classList.remove('selected');
+    });
+    renderSelected();
+}
+
+function renderSelected() {
+    const container = document.getElementById('selectedList');
+    if (selectedIngredients.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    container.innerHTML = selectedIngredients.map(name =>
+        `<span class="selected-chip">${name}<span class="remove" onclick="removeIngredient('${name}')">&times;</span></span>`
+    ).join('');
+}
+
+function rollCook() {
+    const resultBox = document.getElementById('recipeResult');
+    resultBox.classList.add('show');
+
+    if (selectedIngredients.length === 0) {
+        resultBox.innerHTML = '<div class="no-recipe">请先选择你冰箱里的食材</div>';
+        return;
+    }
+
+    // 找到所有匹配的菜谱（按匹配度排序）
+    const matched = recipeDB
+        .map(recipe => ({
+            ...recipe,
+            matchCount: recipe.need.filter(n => selectedIngredients.includes(n)).length,
+            matchAll: recipe.need.every(n => selectedIngredients.includes(n))
+        }))
+        .filter(r => r.matchCount > 0)
+        .sort((a, b) => b.matchCount - a.matchCount);
+
+    if (matched.length === 0) {
+        resultBox.innerHTML = `
+            <div class="no-recipe">
+                没找到能做的菜...<br>
+                <span style="font-size:12px;margin-top:8px;display:block;">试试加更多食材？</span>
+            </div>`;
+        return;
+    }
+
+    // 按匹配度分组，从高到低随机选4-5道
+    const groups = {};
+    matched.forEach(r => {
+        if (!groups[r.matchCount]) groups[r.matchCount] = [];
+        groups[r.matchCount].push(r);
+    });
+
+    const sortedKeys = Object.keys(groups).map(Number).sort((a, b) => b - a);
+    let picks = [];
+    for (const key of sortedKeys) {
+        const shuffled = groups[key].sort(() => Math.random() - 0.5);
+        for (const r of shuffled) {
+            if (picks.length >= 5) break;
+            picks.push(r);
+        }
+        if (picks.length >= 5) break;
+    }
+
+    let html = `<div style="font-size:15px;font-weight:700;color:#333;margin-bottom:16px;">为你推荐 ${picks.length} 道菜：</div>`;
+
+    picks.forEach((pick, idx) => {
+        const missing = pick.need.filter(n => !selectedIngredients.includes(n));
+        const isFull = missing.length === 0;
+        html += `
+            <div class="recipe-card">
+                <div class="recipe-name">${idx + 1}. ${pick.name}</div>
+                ${isFull
+                    ? '<div style="font-size:12px;color:#4caf50;margin-bottom:6px;">食材齐全</div>'
+                    : `<div style="font-size:12px;color:#ee5a24;margin-bottom:6px;">还需: ${missing.join('、')}</div>`
+                }
+                <div class="recipe-section-title">食材</div>
+                <div class="recipe-list">${pick.ingredients.join('、')}</div>
+                <div class="recipe-section-title">做法</div>
+                <ol class="recipe-steps">${pick.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+            </div>
+        `;
+    });
+
+    resultBox.innerHTML = html;
+    addHistory('cook', picks.map(p => p.name).join('、'));
+}
+
+// ============ 历史记录 ============
+function addHistory(type, name) {
+    const list = type === 'delivery' ? deliveryHistory : cookHistory;
+    list.unshift(name);
+    if (list.length > 10) list.pop();
+    localStorage.setItem(type + 'History', JSON.stringify(list));
+    renderHistory(type);
+}
+
+function renderHistory(type) {
+    const list = type === 'delivery' ? deliveryHistory : cookHistory;
+    const section = document.getElementById(type + 'HistorySection');
+    const container = document.getElementById(type + 'History');
+    if (list.length === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    container.innerHTML = list.map(name => `<span class="history-item">${name}</span>`).join('');
+}
+
+function clearHistory(type) {
+    if (type === 'delivery') deliveryHistory = [];
+    else cookHistory = [];
+    localStorage.setItem(type + 'History', '[]');
+    renderHistory(type);
+}
+
+// ============ 初始化 ============
+initTags();
+renderExclusions();
+renderHistory('delivery');
+renderHistory('cook');
+</script>
+</body>
+</html>
